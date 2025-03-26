@@ -1,0 +1,44 @@
+SIMPLE COPY-PASTE FIX FOR DECRYPTED TEXT NOT SHOWING
+
+1. Open lib/main.dart and locate line ~2116 where the Container displays the decrypted text.
+
+2. Replace the ENTIRE Container with this code:
+
+Container(
+  width: double.infinity,
+  padding: EdgeInsets.all(12),
+  decoration: BoxDecoration(
+    color: isDark
+        ? Colors.black.withOpacity(0.9)
+        : Colors.white,
+    borderRadius: BorderRadius.circular(8),
+    border: Border.all(
+      color: isDark
+          ? Colors.white.withOpacity(0.6)
+          : Colors.black.withOpacity(0.3),
+      width: 1.5,
+    ),
+  ),
+  child: Text(
+    result['decrypted'] ?? '',   // <-- THIS IS THE KEY CHANGE!
+    style: TextStyle(
+      color: isDark 
+          ? Colors.white
+          : Colors.black,
+      fontWeight: FontWeight.w600,
+      fontSize: 16,
+      letterSpacing: 0.5,
+      height: 1.4,
+    ),
+  ),
+),
+
+
+3. Also find the clipboard code at line ~2149 and replace it with:
+
+Clipboard.setData(ClipboardData(text: result['decrypted'] ?? ''));
+
+
+4. Finally, find the _addToHistory method (~line 2760) and replace the resultText line with:
+
+resultText: result['decrypted'] ?? '', 

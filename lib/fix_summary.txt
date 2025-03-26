@@ -1,0 +1,53 @@
+DECRYPTED TEXT VISIBILITY FIX - SUMMARY
+
+IDENTIFIED ISSUES:
+----------------
+1. WRONG DATA KEY: The code was looking for 'plaintext' in the result map, but data is actually stored with the key 'decrypted'.
+
+2. INSUFFICIENT CONTRAST: The background opacity (0.3) was too low in dark mode, making text difficult to see.
+
+3. MISSING BORDER: Without a border, the container blended into the background too much.
+
+4. TEXT STYLING: The font weight and size could be improved for better readability.
+
+5. CLIPBOARD CODE: The clipboard copy function was also looking for the wrong key.
+
+6. HISTORY UPDATE: The _addToHistory method was using the wrong key as well.
+
+SOLUTIONS:
+---------
+1. USE CORRECT KEY: Change all references from 'plaintext' to 'decrypted':
+   - In the Text widget: result['decrypted'] instead of result['plaintext']
+   - In the Clipboard code
+   - In the _addToHistory method
+
+2. INCREASE CONTRAST:
+   - Dark mode: Change background opacity from 0.3 to 0.9 (nearly opaque black)
+   - Light mode: Use pure white instead of light gray
+   - Use maximum contrast text colors (pure white/black)
+
+3. ADD VISIBLE BORDER:
+   - Add a 1.5px border that's visible in both light and dark modes
+   - Use white border in dark mode, black border in light mode
+
+4. IMPROVE TEXT STYLING:
+   - Increase font weight to 600 (semi-bold)
+   - Increase font size from 15 to 16
+   - Add letter spacing (0.5)
+   - Add line height (1.4) for better readability
+
+HOW TO APPLY THE FIX:
+-------------------
+1. Locate the Container widget in _buildResults method (around line 2116)
+2. Replace it with the version in direct_decryption_fix.dart
+3. Update the clipboard code around line 2149
+4. Update the _addToHistory method's resultText parameter
+
+DEBUGGING AIDS:
+-------------
+If the text is still not visible, use the debug_text_display.dart widget to see:
+1. What keys are actually available in the result map
+2. What text is being extracted from different keys
+3. A high-contrast display of the found text
+
+This will help identify exactly where the text is stored in the result map. 

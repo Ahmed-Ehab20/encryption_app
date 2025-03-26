@@ -1,0 +1,89 @@
+# COMPLETE FIX GUIDE FOR DECRYPTED TEXT VISIBILITY
+
+## ISSUE SUMMARY
+The decrypted text was not showing up due to several issues:
+
+1. **Wrong Data Key**: The code was looking for 'plaintext' but the data uses the key 'decrypted'.
+2. **Insufficient Contrast**: The background opacity was too low (0.3) making text hard to see in dark mode.
+3. **Missing Border**: The container blended into the background without a visible boundary.
+4. **Text Styling**: Font weight and sizing needed improvement.
+5. **Clipboard Issues**: The clipboard functionality was also using the wrong key.
+
+## COMPLETE FIXES
+
+### 1. Fix in main.dart
+
+The most important fix is to update the Container in the _buildResults method (around line 2116):
+
+```dart
+Container(
+  width: double.infinity,
+  padding: EdgeInsets.all(12),
+  decoration: BoxDecoration(
+    color: isDark
+        ? Colors.black.withOpacity(0.9)  // CHANGED from 0.3 to 0.9
+        : Colors.white,                  // CHANGED from Colors.grey.withOpacity(0.1)
+    borderRadius: BorderRadius.circular(8),
+    border: Border.all(                  // ADDED border
+      color: isDark
+          ? Colors.white.withOpacity(0.6)
+          : Colors.black.withOpacity(0.3),
+      width: 1.5,
+    ),
+  ),
+  child: Text(
+    result['decrypted'] ?? '',          // CHANGED from 'plaintext' to 'decrypted'
+    style: TextStyle(
+      color: isDark ? Colors.white : Colors.black,
+      fontWeight: FontWeight.w600,      // ADDED font weight
+      fontSize: 16,                     // CHANGED from 15
+      letterSpacing: 0.5,               // ADDED letter spacing
+      height: 1.4,                      // ADDED line height
+    ),
+  ),
+),
+```
+
+### 2. Fix the clipboard code (around line 2149)
+
+```dart
+Clipboard.setData(ClipboardData(text: result['decrypted'] ?? ''));
+```
+
+### 3. Fix the _addToHistory method (around line 2760)
+
+```dart
+resultText: result['decrypted'] ?? '',
+```
+
+## DEBUGGING TOOLS
+
+If the text still doesn't show up, use the debug_result_info.dart widget to see what's in your result map:
+
+1. Import the debug file at the top of main.dart:
+```dart
+import 'package:your_app/debug_result_info.dart';
+```
+
+2. Add the widget after the "Decrypted Text:" section:
+```dart
+Text('Decrypted Text:', ...),
+SizedBox(height: 8),
+DebugResultInfo(result: result, isDark: isDark),  // ADD THIS LINE
+SizedBox(height: 8),
+Container(...),
+```
+
+3. Run the app and check what keys are actually available in the result map.
+
+## OTHER POSSIBLE ISSUES
+
+If you're still having trouble:
+
+1. **Empty Results**: Check if _results list is empty when you try to display.
+2. **Result Structure**: Confirm that your results are properly formatted Maps.
+3. **Other Keys**: The data might be using yet another key name (check with debug widget).
+4. **Layout Issues**: Try removing any Expanded widgets that might be limiting height.
+5. **Overflow**: Check if text is overflowing its container (add overflow: TextOverflow.visible).
+
+If none of these work, use the debug_result_info.dart widget to determine exactly what's in your result map. 
