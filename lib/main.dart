@@ -8,6 +8,9 @@ import 'dart:io';
 import 'dart:convert';
 import 'loading_animation.dart';
 import 'loading_animation_wrapper.dart';
+import 'improved_vigenere.dart';
+import 'vigenere_page.dart';
+import 'file_utils.dart';
 
 // Result class for Vigenère cracking
 class VigenereResult {
@@ -974,6 +977,23 @@ class _CipherScreenState extends State<CipherScreen> {
               _buildKeySection(),
               SizedBox(height: 20),
               _buildActionButton(),
+              SizedBox(height: 20),
+              if (_selectedCipher == 'Vigenère')
+                ElevatedButton.icon(
+                  icon: Icon(Icons.security),
+                  label: Text('Advanced Vigenère Tools'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => VigenerePage()),
+                    );
+                  },
+                ),
               SizedBox(height: 20),
               if (_result.isNotEmpty) _buildResultSection(),
             ],
@@ -2346,33 +2366,8 @@ class _CipherDetectorState extends State<CipherDetector> {
 
   // Helper method for Vigenère decryption
   String _applyVigenereDecryption(String text, String key) {
-    key = key.toLowerCase(); // Ensure key is lowercase for consistency
-    String processedText = '';
-    int keyIndex = 0;
-
-    for (int i = 0; i < text.length; i++) {
-      if (RegExp(r'[A-Za-z]').hasMatch(text[i])) {
-        // Check if character is a letter
-        int shift = key[keyIndex % key.length].codeUnitAt(0) -
-            'a'.codeUnitAt(0); // key shift
-        shift = -shift; // For decryption
-
-        int charCode = text[i].codeUnitAt(0);
-        if (charCode >= 'a'.codeUnitAt(0) && charCode <= 'z'.codeUnitAt(0)) {
-          charCode = ((charCode - 'a'.codeUnitAt(0) + shift + 26) % 26) +
-              'a'.codeUnitAt(0);
-        } else {
-          charCode = ((charCode - 'A'.codeUnitAt(0) + shift + 26) % 26) +
-              'A'.codeUnitAt(0);
-        }
-
-        processedText += String.fromCharCode(charCode);
-        keyIndex++;
-      } else {
-        processedText += text[i]; // Include non-letters unchanged
-      }
-    }
-    return processedText;
+    // Use our improved Vigenère implementation
+    return VigenereUtil.decrypt(text, key);
   }
 
   // Helper method for Rail Fence decryption
@@ -2898,7 +2893,7 @@ class _CipherDetectorState extends State<CipherDetector> {
             if (_blacklist.contains(key)) continue;
 
             // Decrypt with this key
-            String decrypted = _applyVigenereDecryption(text, key);
+            String decrypted = VigenereUtil.decrypt(text, key);
 
             // Calculate readability score
             double score = _calculateReadabilityScore(decrypted);
@@ -2921,8 +2916,31 @@ class _CipherDetectorState extends State<CipherDetector> {
           }
         }
 
-        // Load dictionary words
-        List<String> dictionary = await _loadDictionary();
+        // Load dictionary words from file
+        List<String> dictionary = [];
+        try {
+          // Attempt to load the full dictionary file
+          final String content =
+              await FileUtils.loadTextFile('lib/dictionary.txt');
+          dictionary = content
+              .split('\n')
+              .map((s) => s.trim().toLowerCase())
+              .where((s) =>
+                  s.isNotEmpty &&
+                  s.length >= 2) // Ensure words are at least 2 chars
+              .toList();
+
+          print('Loaded ${dictionary.length} words from dictionary file');
+
+          if (dictionary.isEmpty) {
+            // Fallback to the built-in dictionary if file is empty
+            dictionary = await _loadDictionary();
+          }
+        } catch (e) {
+          print('Error loading dictionary file: $e');
+          // Fall back to the original method
+          dictionary = await _loadDictionary();
+        }
 
         // Add best potential candidates to the words list
         dictionary = [
@@ -2973,7 +2991,7 @@ class _CipherDetectorState extends State<CipherDetector> {
           }
 
           // Actually decrypt with this key
-          String decrypted = _applyVigenereDecryption(text, word);
+          String decrypted = VigenereUtil.decrypt(text, word);
 
           // Calculate readability score
           double score = _calculateReadabilityScore(decrypted);

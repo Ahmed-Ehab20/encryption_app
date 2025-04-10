@@ -36,5 +36,5 @@ def hack(cipherText):
 
     print("complete.")
 
-cipherText = "Ivplyprr th pw clhoic pozc." # the longer the cipher the better
+cipherText = "Hwsf msksmgs gsmmo" # the longer the cipher the better
 hack = hack(cipherText)
