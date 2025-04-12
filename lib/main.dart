@@ -978,23 +978,6 @@ class _CipherScreenState extends State<CipherScreen> {
               SizedBox(height: 20),
               _buildActionButton(),
               SizedBox(height: 20),
-              if (_selectedCipher == 'Vigenère')
-                ElevatedButton.icon(
-                  icon: Icon(Icons.security),
-                  label: Text('Advanced Vigenère Tools'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => VigenerePage()),
-                    );
-                  },
-                ),
-              SizedBox(height: 20),
               if (_result.isNotEmpty) _buildResultSection(),
             ],
           ),
@@ -1119,7 +1102,7 @@ class _CipherScreenState extends State<CipherScreen> {
                 ),
                 SizedBox(width: 8),
                 Text(
-                  'Ciphertext',
+                  'Plaintext',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

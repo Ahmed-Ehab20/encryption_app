@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'improved_vigenere.dart';
 import 'improved_vigenere_attack.dart';
+import 'enhanced_vigenere_page.dart';
 
 /// A complete page for Vigenère cipher operations including:
 /// - Encryption
@@ -330,7 +331,7 @@ class _DecryptTabState extends State<DecryptTab> {
   }
 }
 
-/// Tab for dictionary attack on Vigenère cipher
+/// Tab for attacking Vigenère cipher
 class AttackTab extends StatefulWidget {
   @override
   _AttackTabState createState() => _AttackTabState();
@@ -339,7 +340,173 @@ class AttackTab extends StatefulWidget {
 class _AttackTabState extends State<AttackTab> {
   @override
   Widget build(BuildContext context) {
-    return ImprovedVigenereAttackPage();
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Enhanced cracker for short texts
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.psychology,
+                        color: Theme.of(context).primaryColor,
+                        size: 24,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Enhanced Vigenère Cracking',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      Spacer(),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'New',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Optimized for short texts (1-2 sentences) with selectable analysis methods',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : Colors.black54,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    '• Only allows one cracking method at a time for better performance\n'
+                    '• Includes methods like Key Length Analysis, Dictionary Attack, and more\n'
+                    '• Especially effective for shorter ciphertexts',
+                    style: TextStyle(
+                      fontSize: 13,
+                      height: 1.4,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white60
+                          : Colors.black45,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      icon: Icon(Icons.bolt),
+                      label: Text('Open Enhanced Cracker'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        backgroundColor: Colors.deepPurple,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EnhancedVigenerePage(
+                              savedKeys: [], // Pass saved keys if available
+                              onSavedKeysUpdate: (newKeys) {
+                                // Handle saved keys update if needed
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+
+          // Traditional attack methods
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Traditional Attack Methods',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Full-featured Vigenère cryptanalysis with various attack methods',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : Colors.black54,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      icon: Icon(Icons.security),
+                      label: Text('Open Traditional Cracker'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ImprovedVigenereAttackPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
